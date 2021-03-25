@@ -1,10 +1,10 @@
-import { Component, useState } from "react";
+import { useState } from "react";
 import { FiEdit3, FiTrash } from "react-icons/fi";
 
 import { Container } from "./styles";
 import api from "../../services/api";
 
-interface Food {
+interface IFood {
   id: number;
   name: string;
   description: string;
@@ -13,14 +13,14 @@ interface Food {
   image: string;
 }
 
-interface FoodProps {
-  food: Food;
-  handleDelete: () => void;
-  handleEditFood: () => void;
+interface IFoodProps {
+  food: IFood;
+  handleDelete: (id: number) => void;
+  handleEditFood: (food: IFood) => void;
 }
 
-export function Food({ food, handleDelete, handleEditFood }: FoodProps) {
-  const [isAvailable, setIsAvailable] = useState(false);
+export function Food({ food, handleDelete, handleEditFood }: IFoodProps) {
+  const [isAvailable, setIsAvailable] = useState(food.available);
 
   async function toggleAvailable() {
     await api.put(`/foods/${food.id}`, {
@@ -31,11 +31,9 @@ export function Food({ food, handleDelete, handleEditFood }: FoodProps) {
     setIsAvailable(!isAvailable);
   }
 
-  // setEditingFood = () => {
-  //   const { food, handleEditFood } = this.props;
-
-  //   handleEditFood(food);
-  // }
+  function setEditingFood() {
+    handleEditFood(food);
+  }
 
   return (
     <Container available={isAvailable}>
@@ -54,7 +52,7 @@ export function Food({ food, handleDelete, handleEditFood }: FoodProps) {
           <button
             type="button"
             className="icon"
-            // onClick={this.setEditingFood}
+            onClick={setEditingFood}
             data-testid={`edit-food-${food.id}`}
           >
             <FiEdit3 size={20} />
@@ -63,7 +61,7 @@ export function Food({ food, handleDelete, handleEditFood }: FoodProps) {
           <button
             type="button"
             className="icon"
-            // onClick={() => handleDelete(food.id)}
+            onClick={() => handleDelete(food.id)}
             data-testid={`remove-food-${food.id}`}
           >
             <FiTrash size={20} />
